@@ -9,6 +9,8 @@ exports.videoController = {
         res.status(200).json(videos);
     },
     createVideo(req, res) {
+        const createdAt = new Date(); // Текущая дата
+        const publicationDate = addDays(createdAt, 1).toISOString(); // Дата на 1 день позже
         const title = req.body.title;
         const author = req.body.author;
         const availableResolutions = req.body.availableResolutions;
@@ -17,18 +19,17 @@ exports.videoController = {
         (0, field_validator_1.authorFieldValidator)(author, errorsArray);
         (0, field_validator_1.availableResolutionsFieldValidator)(availableResolutions, errorsArray);
         if (errorsArray.length > 0) {
-            // const errors_ = errorResponse(errorsArray);
-            res.status(400).send(errorsArray);
+            res.status(400).send({ errorsMessages: errorsArray });
             return;
         }
         const newVideo = {
             id: Date.now() + Math.random(),
             title,
             author,
-            canBeDownloaded: true,
+            canBeDownloaded: false,
             minAgeRestriction: null,
-            createdAt: new Date().toISOString(),
-            publicationDate: new Date().toISOString(),
+            createdAt: createdAt.toISOString(),
+            publicationDate,
             availableResolutions
         };
         db_1.db.videos = [...db_1.db.videos, newVideo];
@@ -51,17 +52,22 @@ exports.videoController = {
         if (!video) {
             return res.status(404).send({ error: 'Video not found' });
         }
+        const errorsArray = [];
+        if (!req.body.title) {
+            errorsArray.push({ field: 'title', message: 'Title is required' });
+        }
+        if (typeof req.body.canBeDownloaded !== 'boolean') {
+            errorsArray.push({ field: 'canBeDownloaded', message: 'canBeDownloaded must be a boolean' });
+        }
+        if (errorsArray.length > 0) {
+            return res.status(400).send({ errorsMessages: errorsArray });
+        }
         const title = (_a = req.body.title) !== null && _a !== void 0 ? _a : '';
         const author = (_b = req.body.author) !== null && _b !== void 0 ? _b : '';
         const availableResolutions = (_c = req.body.availableResolutions) !== null && _c !== void 0 ? _c : [];
         const publicationDate = (_d = req.body.publicationDate) !== null && _d !== void 0 ? _d : '';
-        const canBeDownloaded = (_e = req.body.canBeDownloaded) !== null && _e !== void 0 ? _e : true;
+        const canBeDownloaded = (_e = req.body.canBeDownloaded) !== null && _e !== void 0 ? _e : false;
         const minAgeRestriction = (_f = req.body.minAgeRestriction) !== null && _f !== void 0 ? _f : 18;
-        const errorsArray = [];
-        (0, field_validator_1.titleFieldValidator)(title, errorsArray);
-        (0, field_validator_1.authorFieldValidator)(author, errorsArray);
-        (0, field_validator_1.availableResolutionsFieldValidator)(availableResolutions, errorsArray);
-        (0, field_validator_1.publicationDateFieldValidator)(publicationDate, errorsArray);
         if (errorsArray.length > 0) {
             res.status(400).send(errorsArray);
             return;
@@ -88,3 +94,8 @@ exports.videoController = {
         return res.status(204).send();
     })
 };
+function addDays(date, days) {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+}

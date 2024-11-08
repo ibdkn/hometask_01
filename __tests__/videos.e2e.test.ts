@@ -35,7 +35,7 @@ describe('POST /videos - create video', () => {
         expect(res.body).toMatchObject({
             title: validVideoData.title,
             author: validVideoData.author,
-            canBeDownloaded: true,
+            canBeDownloaded: false,
             minAgeRestriction: null,
             availableResolutions: ["P144"]
         });

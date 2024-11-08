@@ -14,6 +14,8 @@ export const videoController = {
         res.status(200).json(videos);
     },
     createVideo(req: Request, res: Response) {
+        const createdAt = new Date(); // Текущая дата
+        const publicationDate = addDays(createdAt, 1).toISOString(); // Дата на 1 день позже
         const title = req.body.title;
         const author = req.body.author;
         const availableResolutions = req.body.availableResolutions;
@@ -24,8 +26,7 @@ export const videoController = {
         availableResolutionsFieldValidator(availableResolutions, errorsArray);
 
         if (errorsArray.length > 0) {
-            // const errors_ = errorResponse(errorsArray);
-            res.status(400).send(errorsArray);
+            res.status(400).send({ errorsMessages: errorsArray });
             return;
         }
 
@@ -33,10 +34,10 @@ export const videoController = {
             id: Date.now() + Math.random(),
             title,
             author,
-            canBeDownloaded: true,
+            canBeDownloaded: false,
             minAgeRestriction: null,
-            createdAt: new Date().toISOString(),
-            publicationDate: new Date().toISOString(),
+            createdAt: createdAt.toISOString(),
+            publicationDate,
             availableResolutions
         };
 
@@ -63,18 +64,26 @@ export const videoController = {
             return res.status(404).send({ error: 'Video not found' });
         }
 
+        const errorsArray: Array<{ field: string; message: string }> = [];
+
+        if (!req.body.title) {
+            errorsArray.push({ field: 'title', message: 'Title is required' });
+        }
+
+        if (typeof req.body.canBeDownloaded !== 'boolean') {
+            errorsArray.push({ field: 'canBeDownloaded', message: 'canBeDownloaded must be a boolean' });
+        }
+
+        if (errorsArray.length > 0) {
+            return res.status(400).send({ errorsMessages: errorsArray });
+        }
+
         const title = req.body.title ?? '';
         const author = req.body.author ?? '';
         const availableResolutions = req.body.availableResolutions ?? [];
         const publicationDate = req.body.publicationDate ?? '';
-        const canBeDownloaded = req.body.canBeDownloaded ?? true;
+        const canBeDownloaded = req.body.canBeDownloaded ?? false;
         const minAgeRestriction = req.body.minAgeRestriction ?? 18;
-
-        const errorsArray: Array<{field: string; message: string}> = [];
-        titleFieldValidator(title, errorsArray);
-        authorFieldValidator(author, errorsArray);
-        availableResolutionsFieldValidator(availableResolutions, errorsArray);
-        publicationDateFieldValidator(publicationDate, errorsArray);
 
         if (errorsArray.length > 0) {
             res.status(400).send(errorsArray);
@@ -106,4 +115,10 @@ export const videoController = {
         // Отправляем успешный ответ
         return res.status(204).send();
     }) as RequestHandler
+}
+
+function addDays(date: Date, days: number): Date {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
 }

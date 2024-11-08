@@ -52,12 +52,11 @@ exports.videoController = {
             return res.status(404).send({ error: 'Video not found' });
         }
         const errorsArray = [];
-        if (!req.body.title) {
-            errorsArray.push({ field: 'title', message: 'Title is required' });
+        // Валидация title
+        if (!req.body.title || typeof req.body.title !== 'string' || req.body.title.length > 40) {
+            errorsArray.push({ field: 'title', message: 'Title must be a string with max length of 40' });
         }
-        if (typeof req.body.canBeDownloaded !== 'boolean') {
-            errorsArray.push({ field: 'canBeDownloaded', message: 'canBeDownloaded must be a boolean' });
-        }
+        // Валидация minAgeRestriction
         if (req.body.minAgeRestriction !== null &&
             (typeof req.body.minAgeRestriction !== 'number' || req.body.minAgeRestriction < 0 || req.body.minAgeRestriction > 18)) {
             errorsArray.push({

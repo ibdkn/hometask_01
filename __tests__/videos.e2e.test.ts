@@ -220,6 +220,22 @@ describe('UPDATE /videos/{id}', () => {
             .send(invalidData)
             .expect(400);
     });
+
+    it('should return 400 if title and minAgeRestriction are invalid', async () => {
+        const invalidData = {
+            title: 'length_41-oGuSMzyRUxdnN7ClQA7QbIEk5eMianm',
+            author: 'valid author',
+            availableResolutions: ['P720'],
+            canBeDownloaded: true,
+            minAgeRestriction: 25,
+            publicationDate: '2024-11-11T19:49:44.887Z',
+        };
+
+        const response = await req
+            .put('/videos/1')
+            .send(invalidData)
+            .expect(400);
+    });
 });
 
 describe('DELETE /videos/{id}', () => {

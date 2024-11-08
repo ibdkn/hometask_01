@@ -103,7 +103,7 @@ describe('UPDATE /videos/{id}', () => {
     it('should update video successfully', async () => {
         const videoId = 1;
         const validData = {
-            title: 'Updated Title',
+            title: null,
             author: 'Updated Author',
             canBeDownloaded: true,
             minAgeRestriction: 16,

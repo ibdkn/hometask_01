@@ -78,6 +78,11 @@ export const videoController = {
             });
         }
 
+        // Валидация author
+        if (!req.body.author || typeof req.body.author !== 'string' || req.body.author.length > 20) {
+            errorsArray.push({ field: 'author', message: 'Author must be a string with max length of 20' });
+        }
+
         // Валидация minAgeRestriction
         if (
             req.body.minAgeRestriction !== null &&

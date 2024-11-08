@@ -56,6 +56,10 @@ exports.videoController = {
         if (!req.body.title || typeof req.body.title !== 'string' || req.body.title.length > 40) {
             errorsArray.push({ field: 'title', message: 'Title must be a string with max length of 40' });
         }
+        // Валидация author
+        if (!req.body.author || typeof req.body.author !== 'string' || req.body.author.length > 20) {
+            errorsArray.push({ field: 'author', message: 'Author must be a string with max length of 20' });
+        }
         if (typeof req.body.canBeDownloaded !== 'boolean') {
             errorsArray.push({
                 field: 'canBeDownloaded',
@@ -68,6 +72,14 @@ exports.videoController = {
             errorsArray.push({
                 field: 'minAgeRestriction',
                 message: 'minAgeRestriction must be a number between 0 and 18 or null',
+            });
+        }
+        // Валидация publicationDate
+        if (typeof req.body.publicationDate !== 'string' ||
+            isNaN(Date.parse(req.body.publicationDate))) {
+            errorsArray.push({
+                field: 'publicationDate',
+                message: 'PublicationDate must be a valid ISO date string',
             });
         }
         if (errorsArray.length > 0) {

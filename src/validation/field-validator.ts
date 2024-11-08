@@ -25,8 +25,8 @@ export const authorFieldValidator = (author: string, errorsArray: Array<{field: 
     if (!author) {
         errorsArray.push({field: 'author', message: 'author is required'});
     }
-    if (author && author.trim().length > 40) {
-        errorsArray.push({field: 'author', message: 'author is more than 40 symbols'});
+    if (author && author.trim().length > 20) {
+        errorsArray.push({field: 'author', message: 'author is more than 20 symbols'});
     }
     if (author && author.trim().length < 1) {
         errorsArray.push({field: 'author', message: 'author is required'});

@@ -95,7 +95,7 @@ describe('GET /videos/{id}', () => {
     });
 });
 
-describe('PUT /videos/{id}', () => {
+describe('UPDATE /videos/{id}', () => {
     beforeAll(async () => {
         setDB(dataset2);
     });
@@ -155,6 +155,70 @@ describe('PUT /videos/{id}', () => {
 
         expect(res.body).toEqual({ error: 'Video not found' });
         console.log(res.body);
+    });
+
+    it('should return 404 if video does not exist', async () => {
+        const nonExistentVideoId = 9999;
+        const validData = {
+            title: 'New Title',
+            author: 'New Author',
+            canBeDownloaded: true,
+            minAgeRestriction: 16,
+            publicationDate: new Date().toISOString(),
+            availableResolutions: ['P144'],
+        };
+
+        const res = await req
+            .put(`${SETTINGS.PATH.VIDEOS}/${nonExistentVideoId}`)
+            .send(validData)
+            .expect(404);
+
+        expect(res.body).toEqual({ error: 'Video not found' });
+        console.log(res.body);
+    });
+
+    it('should return 400 if minAgeRestriction is greater than 18', async () => {
+        const videoId = 1;
+        const invalidData = {
+            title: 'New Title',
+            author: 'New Author',
+            minAgeRestriction: 20,
+        };
+
+        await req
+            .put(`${SETTINGS.PATH.VIDEOS}/${videoId}`)
+            .send(invalidData)
+            .expect(400);
+    });
+
+    it('should return 400 if minAgeRestriction is less than 0', async () => {
+        const videoId = 1;
+        const invalidData = {
+            title: 'Valid Title',
+            author: 'Valid Author',
+            availableResolutions: ['P720'],
+            minAgeRestriction: -1,
+        };
+
+        await req
+            .put(`${SETTINGS.PATH.VIDEOS}/${videoId}`)
+            .send(invalidData)
+            .expect(400);
+    });
+
+    it('should return 400 if minAgeRestriction is not a number', async () => {
+        const videoId = 1;
+        const invalidData = {
+            title: 'Valid Title',
+            author: 'Valid Author',
+            availableResolutions: ['P720'],
+            minAgeRestriction: 'not_a_number',
+        };
+
+        await req
+            .put(`${SETTINGS.PATH.VIDEOS}/${videoId}`)
+            .send(invalidData)
+            .expect(400);
     });
 });
 

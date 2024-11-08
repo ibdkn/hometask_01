@@ -74,16 +74,26 @@ export const videoController = {
             errorsArray.push({ field: 'canBeDownloaded', message: 'canBeDownloaded must be a boolean' });
         }
 
+        if (
+            req.body.minAgeRestriction !== null &&
+            (typeof req.body.minAgeRestriction !== 'number' || req.body.minAgeRestriction < 0 || req.body.minAgeRestriction > 18)
+        ) {
+            errorsArray.push({
+                field: 'minAgeRestriction',
+                message: 'minAgeRestriction must be a number between 0 and 18 or null',
+            });
+        }
+
         if (errorsArray.length > 0) {
             return res.status(400).send({ errorsMessages: errorsArray });
         }
 
-        const title = req.body.title ?? '';
-        const author = req.body.author ?? '';
-        const availableResolutions = req.body.availableResolutions ?? [];
-        const publicationDate = req.body.publicationDate ?? '';
-        const canBeDownloaded = req.body.canBeDownloaded ?? false;
-        const minAgeRestriction = req.body.minAgeRestriction ?? 18;
+        const title = req.body.title;
+        const author = req.body.author;
+        const availableResolutions = req.body.availableResolutions;
+        const publicationDate = req.body.publicationDate;
+        const canBeDownloaded = req.body.canBeDownloaded;
+        const minAgeRestriction = req.body.minAgeRestriction;
 
         if (errorsArray.length > 0) {
             res.status(400).send(errorsArray);
@@ -122,3 +132,6 @@ function addDays(date: Date, days: number): Date {
     result.setDate(result.getDate() + days);
     return result;
 }
+
+
+console.log(typeof true)

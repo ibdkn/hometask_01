@@ -46,7 +46,6 @@ exports.videoController = {
         return res.status(200).json(video);
     }),
     updateVideo: ((req, res) => {
-        var _a, _b, _c, _d, _e, _f;
         const videoId = +req.params.id; // Преобразуем id из строки в число
         const video = db_1.db.videos.find((v) => v.id === +videoId);
         if (!video) {
@@ -59,15 +58,22 @@ exports.videoController = {
         if (typeof req.body.canBeDownloaded !== 'boolean') {
             errorsArray.push({ field: 'canBeDownloaded', message: 'canBeDownloaded must be a boolean' });
         }
+        if (req.body.minAgeRestriction !== null &&
+            (typeof req.body.minAgeRestriction !== 'number' || req.body.minAgeRestriction < 0 || req.body.minAgeRestriction > 18)) {
+            errorsArray.push({
+                field: 'minAgeRestriction',
+                message: 'minAgeRestriction must be a number between 0 and 18 or null',
+            });
+        }
         if (errorsArray.length > 0) {
             return res.status(400).send({ errorsMessages: errorsArray });
         }
-        const title = (_a = req.body.title) !== null && _a !== void 0 ? _a : '';
-        const author = (_b = req.body.author) !== null && _b !== void 0 ? _b : '';
-        const availableResolutions = (_c = req.body.availableResolutions) !== null && _c !== void 0 ? _c : [];
-        const publicationDate = (_d = req.body.publicationDate) !== null && _d !== void 0 ? _d : '';
-        const canBeDownloaded = (_e = req.body.canBeDownloaded) !== null && _e !== void 0 ? _e : false;
-        const minAgeRestriction = (_f = req.body.minAgeRestriction) !== null && _f !== void 0 ? _f : 18;
+        const title = req.body.title;
+        const author = req.body.author;
+        const availableResolutions = req.body.availableResolutions;
+        const publicationDate = req.body.publicationDate;
+        const canBeDownloaded = req.body.canBeDownloaded;
+        const minAgeRestriction = req.body.minAgeRestriction;
         if (errorsArray.length > 0) {
             res.status(400).send(errorsArray);
             return;
@@ -99,3 +105,4 @@ function addDays(date, days) {
     result.setDate(result.getDate() + days);
     return result;
 }
+console.log(typeof true);

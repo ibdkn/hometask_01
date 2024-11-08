@@ -6,18 +6,7 @@ export type DBType = { // типизация базы данных (что мы 
 }
 
 export const db: DBType = {
-    videos: [
-        {
-            id: 2,
-            title: 'video 2',
-            author: 'author 2',
-            canBeDownloaded: true,
-            minAgeRestriction: null,
-            createdAt: new Date().toISOString(),
-            publicationDate: new Date().toISOString(),
-            availableResolutions: [Resolutions.P720],
-        }
-    ],
+    videos: [],
 }
 
 // функция для быстрой очистки/заполнения базы данных для тестов
